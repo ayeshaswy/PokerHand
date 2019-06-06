@@ -1,0 +1,95 @@
+#Different input sequences to test Poke game evaluator
+
+
+######## Example input provided with the problem ########
+Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C AH		#Output: White wins. - with high card: Ace
+Black: 2H 3D 5S KS KD White: 2C 3H 4S 8C AH		#Output: Black wins. - with pair
+Black: 2H 4S 4C 2D 4H White: 2S 8S AS QS 3S		#Output: Black wins. - with full house
+Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C KH		#Output: Black wins. - with high card: 9
+Black: 2H 3D 5S 9C KD White: 2D 3H 5C 9S KH		#Output: Tie
+
+
+######## Highcard Vs (Highcard - StraightFlush) ########
+Black: 6S 7D 5D 9C QD White: JC 5H 4S 8C 7H		#Output: Black wins. - with high card: Queen
+Black: 6S 7D 5D 9C QD White: KC 5H 5S 8C 7H		#Output: White wins. - with pair
+Black: 6S 7D 5D 9C QD White: KC 5H 5S 8C 8H		#Output: White wins. - with two pairs
+Black: 9S 7D 9D 9C QD White: KC 5H 4S 8C 7H		#Output: Black wins. - with three of a kind
+Black: 6S 7D 5D 9C QD White: 10C 9H JS 8C 7H		#Output: White wins. - with straight
+Black: 6D 7D 5D 9D QD White: KC 5H 5S 8C 7H		#Output: Black wins. - with flush
+Black: 6S 7D 5D 9C QD White: 8C 5H 5S 8D 8H		#Output: white wins. - with full house
+Black: 6S 7D 6D 6C 6H White: KC 5H 5S 8C 7H		#Output: Black wins. - with four of a kind
+Black: 6C 7D 5D 9S QD White: 10C 9C JC 8C 7C		#Output: white wins. - with straight flush
+Black: 6S 7D 5D 9C QD White: 6C 9H 7S QC 5H		#Output: Tie
+
+
+######## Pair Vs (Pair - StraightFlush) ########
+Black: KC 5H 5S 8C 7H White: 10S 7D 2C 10D 3H		#Output: White wins. - with pair
+Black: KC 5H 5S 8C KH White: 10S 7D 2C 10D 3H		#Output: Black wins. - with two pairs
+Black: KC 5H 5S 8C 5C White: 10S 7D 2C 10D 3H		#Output: Black wins. - with three of a kind
+Black: KC 5H 5S 8C 7H White: 10S 8D 9C JD QH		#Output: White wins. - with sraight
+Black: KH 5H 9H 2H JH White: 10S 7D 2C 10D 3H		#Output: Black wins. - with flush
+Black: 8D 5H 5S 8C 8H White: 10S 7D 2C 10D 3H		#Output: Black wins. - with full house
+Black: KC 5H 5S 8C 7H White: 10S 10D 2C 10C 10H		#Output: White wins. - with four of a kind
+Black: KC 5H 5S 8C 7H White: 10S 7S 6S 9S 8S		#Output: White wins. - with straight flush
+Black: KC 5H 5S 8C 7H White: 8S 5D KH 5C 7C		#Output: Tie
+
+
+######## TwoPairs Vs (TwoPairs - StraightFlush)########
+Black: 3C 5H 9D 3S 5C White: 7D 7C KS 2C KH		#Output: White wins. - with two pairs
+Black: 3C 5H 9D 3S 5C White: 7D 7C KS 2C 7H		#Output: White wins. - with three of a kind
+Black: 3C 5H 2S 4D AC White: 7D 7C KS 2C KH		#Output: Black wins. - with straight
+Black: 3C 5C 9C JC AC White: 7D 7C KS 2C KH		#Output: Black wins. - with flush
+Black: 3C 9H 9D 3S 9C White: 7D 7C KS 2C KH		#Output: Black wins. - with full house
+Black: 3C 5H 9D 3S 5C White: 7D 7C 7S 2C 7H		#Output: White wins. - with four of a kind
+Black: 3H 5H 2H AH 4H White: 7D 7C KS 2C KH		#Output: Black wins. - with straight flush
+Black: 3C 7H 9D 7S 9C White: 7D 7C 9S 3H 9H		#Output: Tie
+
+########  ThreeOfAKind Vs (ThreeOfAKind - StraightFlush) ######## 
+Black: 9S 7D 9D 9C QD White: KC 4H 4S 4C 7H	 	#Output: Black wins. - with three of a kind
+Black: 9S 7D 9D 9C QD White: KC 9H 10S QC JH		#Output: White wins. - with straight
+Black: 9S 7D 9D 9C QD White: KC 4C AC 2C 7C		#Output: White wins. - with flush
+Black: 9S 7D 9D 9C QD White: 7C 4H 4S 4C 7H		#Output: white wins. - with full house
+Black: 9S 7D 9D 9C 9H White: KC 4H 4S 4C 7H		#Output: Black wins. - with four of a kind
+Black: 9S 7D 9D 9C QD White: 7C 4C 5C 6C 3C		#Output: White wins. - with straight flush
+
+######## Straight Vs (Straight - StraightFlush) ########
+Black: 3C 5H 2S 4D AC White: 7D 8C JS 10C 9H		#Output: White wins. - with straight
+Black: 9D 5D 2D JD AD White: 7D 8C JS 10C 9H		#Output: Black wins. - with flush
+Black: 5C 5H 2S 2D 5D White: 7D 8C JS 10C 9H		#Output: Black wins. - with full house
+Black: 3C 5H 3S 3D 3H White: 7D 8C JS 10C 9H		#Output: Black wins. - with four of a kind
+Black: 3C 5H 2S 4D AC White: 7H 8H JH 10H 9H		#Output: White wins. - with straight flush
+Black: 3C 5H 2S 4D AC White: 3D 5C 2H 4C AH		#Output: Tie
+
+######## Flush Vs (Flush - StraighFlush) ######## 
+Black: 2H 5H AH KH 4H White: 2S 8S AS 10S 3S		#Output: Black wins. - with flush
+Black: 6S 8S AS QS 3S White: 2H 4S 4C 2D 2S		#Output: White wins. - with full house
+Black: 2H 5H AH KH 4H White: 8D 8S 8H 10S 8C		#Output: White wins. - with four of a kind
+Black: 2S 5S AS 4S 3S White: 2H 5H AH KH 4H		#Output: Black wins. - with straight flush
+Black: 2H 5H AH KH 4H White: 2S 5S AS KS 4S		#Output: Tie
+
+########  FullHouse Vs (FullHouse - StraightFlush)
+Black: 6S 7D 6D 7C 6H White: 8C 5H 5S 8D 8H		#Output: White wins. - with full house
+Black: 6S 7D 6D 6C 6H White: 8C 5H 5S 8D 8H		#Output: Black wins. - with four of a kind
+Black: 6S 7D 6D 7C 6H White: 2S 5S AS 4S 3S		#Output: White wins. - with straight flush
+
+########  FourOfAKind Vs (FourOfAKind - StraightFlush) ########  
+Black: 9S 7D 9D 9C 9H White: KC 4H 4S 4C 4D		#Output: Black wins. - with four of a kind
+Black: 9S 7D 9D 9C 9H White: 7H 8H 5H 4H 6H 		#Output: White wins. - with straight flush
+
+########  StraightFlush Vs StraighFlush ########  
+Black: 7H 8H JH 10H 9H White: 2S 5S AS 4S 3S		#Output: Black wins. - with straigh flush
+Black: 7H 8H JH 10H 9H White: 7S 8S JS 10S 9S		#Output: Tie
+
+########  Invalid Inputs ########  
+Black: 2H 3D 5S 9C KH White: 2C 3H 4S 8C KH		#Output: More than one occurrence of one or more card in the input
+Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C KH AD		#Output: The number of cards in hand is not equal to 5
+Black: 2H 3D 5S C KD White: 2C 3H 4S 8C KH 10CD		#Output: Wrong number of characters per card in the input 
+Black: 2H 3D 5S 9C KD White: 2C 3H 4S 8C 1KH		#Output: Invalid value for card, first 2 out of 3 chars are not digits
+Black: 2H 3D 5S 9C K1D White: 2C 3H 4S 8C KH		#Output: Invalid value for card, first 2 out of 3 chars are not digits
+Black: 2H 1D 5S 9C KD White: 2C 3H 4S 8C KH		#Output: Card with value less than 2 or greater than 10.
+Black: 2H 3D 5S 9C KD White: 2C 3H 12S 8C KH		#Output: Card with value less than 2 or greater than 10.
+Black: 2H 3D 5S BC KD White: 2C 3H 4S 8C KH		#Output: Invalid card with value not among 2-10/J/Q/K/A
+Black: 2H 3D 5M 9C KD White: 2C 3H 12S 8C KH		#Output: Invalid suit for a card. Not among C/D/H/S
+
+########  Player name change ########  
+John: 9S 7D 9D 9C QD Mary: KC 4H 4S 4C 7H		#Output: John wins. - with three of a kind
