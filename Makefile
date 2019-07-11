@@ -2,13 +2,11 @@ CC=g++
 CPPFLAGS=-c -Wall
 
 SRC=main.cpp \
-	InputHandler.cpp \
-	Hand.cpp \
+	InputHandle.cpp \
 	HandEvaluator.cpp \
 	Judge.cpp
 OBJS=main.o \
-	InputHandler.o \
-	Hand.o \
+	InputHandle.o \
 	HandEvaluator.o \
 	Judge.o
 

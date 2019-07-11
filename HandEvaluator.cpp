@@ -8,187 +8,149 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "HandEvaluator.hpp"
+#include "HandEvaluator.h"
+
 
 using namespace std;
 
 namespace Poker {
-
-HandEvaluator *HandEvaluator::instance;
-
-HandEvaluator::HandEvaluator() {
-	handinfo = NULL;
-	playerinfo = NULL;
-}
-
-void HandEvaluator::resetEvaluatorData() {
-
-	delete playerinfo;
-	playerinfo = NULL;
-
-	delete handinfo;
-	handinfo = NULL;
-}
-
-void HandEvaluator::setPlayerInfo(const PlayerInfoType info) {
-	try {
-		playerinfo= new PlayerInfoType;
-		*playerinfo = info;
-
-		handinfo = new HandInfoType;
-		//Set default values for handinfo.
-		handinfo->name.clear();
-		handinfo->fourofakindvalue = 0;
-		handinfo->handcombination = HIGH_CARD;
-		handinfo->laststraightcardvalue = 0;
-		handinfo->pair2value = 0;
-		handinfo->pairvalue = 0;
-		handinfo->threeofakindvalue = 0;
-		handinfo->winninghighcardvalue = 0;
-		handinfo->cardsnotincomination.clear();
-	} catch (std::bad_alloc &e) {
-		cout << "new Failed to allocated memory"<<endl;
-		exit(1);
+	HandEvaluator::HandEvaluator() {
+		handinfo = NULL;
+		playerinfo = NULL;
 	}
 
-}
-
-PlayerInfoType HandEvaluator::getPlayerInfo() {
-	return *playerinfo;
-}
-
-void HandEvaluator::evaluateHand() {
-
-	handinfo->name = playerinfo->name;
-	//When there is a Flush or a straight, no other poker combinations are possible (except straight flush).
-	//So first check for Flush or straight.
-	checkForFlush();
-	if (!checkForStraight()) {
-		//To handle the case of Ace taking value 1 to form straight sequence "A 2 3 4 5"
-		if (playerinfo->values.back() == HIGH_ACE) {
-			auto actualvalues = playerinfo->values;
-			playerinfo->values.erase(playerinfo->values.end() - 1);
-			playerinfo->values.insert(playerinfo->values.begin(), ACE);
-			checkForStraight();
-			playerinfo->values = actualvalues;
-		}
-	}
-
-	if ((handinfo->handcombination == FLUSH) || (handinfo->handcombination == STRAIGHT)
-			|| (handinfo->handcombination == STRAIGHT_FLUSH)) {
-		return;
-	}
-
-	if (!checkForRepeatedValues()) {
-		//At this point all combinations are checked for. Not much luck there!!
-		handinfo->handcombination = HIGH_CARD;
-	}
-
-	return;
-}
-
-bool HandEvaluator::checkForRepeatedValues() {
-	bool result = false;
-	unsigned int numofoccurances = 1;
-
-	for (auto it=playerinfo->values.begin(); it<(playerinfo->values.end()); ++it) {
-		if ((it+1)<playerinfo->values.end()) {
-			if (*it == *(it+1)) {
-				++numofoccurances;
-				result = true;
-				continue;
+	void HandEvaluator::evaluateHand(PlayerInfoType* info, HandInfoType* hinfo) {
+		playerinfo = info;
+		handinfo = hinfo;
+		handinfo->name = playerinfo->name;
+		//When there is a Flush or a straight, no other poker combinations are possible (except straight flush).
+		//So first check for Flush or straight.
+		checkForFlush();
+		if (!checkForStraight()) {
+			//To handle the case of Ace taking value 1 to form straight sequence "A 2 3 4 5"
+			if (playerinfo->values.back() == HIGH_ACE) {
+				auto actualvalues = playerinfo->values;
+				playerinfo->values.erase(playerinfo->values.end() - 1);
+				playerinfo->values.insert(playerinfo->values.begin(), ACE);
+				checkForStraight();
+				playerinfo->values = actualvalues;
 			}
 		}
-		switch(numofoccurances) {
-		case 1:
-			handinfo->cardsnotincomination.push_back(*it);
-			break;
-		case 2:
-			if (handinfo->pairvalue == 0)
-				handinfo->pairvalue = *it;
-			else
-				handinfo->pair2value = *it;
-			break;
-		case 3:
-			handinfo->threeofakindvalue = *it;
-			break;
-		case 4:
-			handinfo->fourofakindvalue = *it;
-			break;
-		default:
-			break;
+
+		if ((handinfo->handcombination == FLUSH) || (handinfo->handcombination == STRAIGHT)
+			|| (handinfo->handcombination == STRAIGHT_FLUSH)) {
+			return;
 		}
-		numofoccurances = 1;
+
+		if (!checkForRepeatedValues()) {
+			//At this point all combinations are checked for. Not much luck there!!
+			handinfo->handcombination = HIGH_CARD;
+		}
 	}
 
-	if (result)
-		analyseRepeatedValueCheckResult();
+	bool HandEvaluator::checkForRepeatedValues() {
+		bool result = false;
+		unsigned int numofoccurances = 1;
 
-	return result;
-}
+		for (auto it = playerinfo->values.begin(); it < (playerinfo->values.end()); ++it) {
+			if ((it + 1) < playerinfo->values.end()) {
+				if (*it == *(it + 1)) {
+					++numofoccurances;
+					result = true;
+					continue;
+				}
+			}
+			switch (numofoccurances) {
+			case 1:
+				handinfo->cardsnotincomination.push_back(*it);
+				break;
+			case 2:
+				if (handinfo->pairvalue == 0)
+					handinfo->pairvalue = *it;
+				else
+					handinfo->pair2value = *it;
+				break;
+			case 3:
+				handinfo->threeofakindvalue = *it;
+				break;
+			case 4:
+				handinfo->fourofakindvalue = *it;
+				break;
+			default:
+				break;
+			}
+			numofoccurances = 1;
+		}
 
-void HandEvaluator::analyseRepeatedValueCheckResult() {
-	if (handinfo->fourofakindvalue != 0) {
-		handinfo->handcombination = FOUR_OF_A_KIND;
-		return;
+		if (result)
+			analyseRepeatedValueCheckResult();
+
+		return result;
 	}
 
-	if (handinfo->threeofakindvalue != 0) {
+	void HandEvaluator::analyseRepeatedValueCheckResult() {
+		if (handinfo->fourofakindvalue != 0) {
+			handinfo->handcombination = FOUR_OF_A_KIND;
+			return;
+		}
+
+		if (handinfo->threeofakindvalue != 0) {
+			if (handinfo->pairvalue != 0) {
+				handinfo->handcombination = FULL_HOUSE;
+			}
+			else {
+				handinfo->handcombination = THREE_OF_A_KIND;
+			}
+			return;
+		}
+
 		if (handinfo->pairvalue != 0) {
-			handinfo->handcombination = FULL_HOUSE;
-		} else {
-			handinfo->handcombination = THREE_OF_A_KIND;
+			if (handinfo->pair2value != 0)
+				handinfo->handcombination = TWO_PAIRS;
+			else
+				handinfo->handcombination = PAIR;
+			return;
 		}
-		return;
 	}
 
-	if (handinfo->pairvalue != 0) {
-		if (handinfo->pair2value != 0)
-			handinfo->handcombination = TWO_PAIRS;
-		else
-			handinfo->handcombination = PAIR;
-		return;
-	}
-}
-
-bool HandEvaluator::checkForStraight() {
-	bool result = false;
-	for (auto it=playerinfo->values.begin(); it < (playerinfo->values.end()-1); ++it) {
-		if ((*it + 1) != *(it+1)) {
-			result = false;
-			break;
+	bool HandEvaluator::checkForStraight() {
+		bool result = false;
+		for (auto it = playerinfo->values.begin(); it < (playerinfo->values.end() - 1); ++it) {
+			if ((*it + 1) != *(it + 1)) {
+				result = false;
+				break;
+			}
+			result = true;
 		}
-		result = true;
-	}
-	if (result) {
-		if (handinfo->handcombination == FLUSH)
-			handinfo->handcombination = STRAIGHT_FLUSH;
-		else
-			handinfo->handcombination = STRAIGHT;
-		handinfo->laststraightcardvalue = playerinfo->values.back();
-	}
-	return result;
-}
-
-bool HandEvaluator::checkForFlush() {
-	bool result = false;
-	for (auto it=playerinfo->suits.begin(); it < (playerinfo->suits.end()-1); ++it) {
-		if (*it != *(it+1)) {
-			result = false;
-			break;
+		if (result) {
+			if (handinfo->handcombination == FLUSH)
+				handinfo->handcombination = STRAIGHT_FLUSH;
+			else
+				handinfo->handcombination = STRAIGHT;
+			handinfo->laststraightcardvalue = playerinfo->values.back();
 		}
-		result = true;
+		return result;
 	}
-	if (result) {
-		handinfo->handcombination = FLUSH;
-		handinfo->flushsuit = *(playerinfo->suits.begin());
-		//In case the other player also gets a hand of flush, then the values
-		//of the cards will determine the winner. 'cardsnotincombination' of
-		//both players will be compared.
-		handinfo->cardsnotincomination = playerinfo->values;
+
+	bool HandEvaluator::checkForFlush() {
+		bool result = false;
+		for (auto it = playerinfo->suits.begin(); it < (playerinfo->suits.end() - 1); ++it) {
+			if (*it != *(it + 1)) {
+				result = false;
+				break;
+			}
+			result = true;
+		}
+		if (result) {
+			handinfo->handcombination = FLUSH;
+			handinfo->flushsuit = *(playerinfo->suits.begin());
+			//In case the other player also gets a hand of flush, then the values
+			//of the cards will determine the winner. 'cardsnotincombination' of
+			//both players will be compared.
+			handinfo->cardsnotincomination = playerinfo->values;
+		}
+		return result;
 	}
-	return result;
-}
 
 } //namespace
 
