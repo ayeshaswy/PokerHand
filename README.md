@@ -31,70 +31,40 @@ Tie.
 
 SOLUTION:
 
-The solution works in 4 steps:
-1. Input
-2. Store Player Info
-3. Evaluate Player's hand (identify poker combination)
-4. Decide winner and Print.
-
+The solution has 3 thread:
+1. Input thread
+2. A thread that evaluates Player's hand (identify poker combination)
+3. A judge thread that decides winner and Prints.
 
 Input:
-
-Input is handled by 'InputHandler' Class. The input can be provided in 2 ways.
-* From console
-* From input text file
-The 'InputHandler' class accepts input, processes and validates the input.
-It then passes the input to 'Hand' class.
-
-
-Store Player Info:
-
-The 'Hand class receives the processed input and saves it for further use. It then 
-passes the hand information of each player one by one to 'HandEvaluator' class
-for hand analysis. The output of 'HandEvaluator' analysis is also saved in the 
-'Hand' class.
+Input is handled by input thread via 'InputHandle' Class. The input is read
+from a file provided by the user in interactive mode.
+The 'InputHandle' class accepts input, processes and validates the input.
+The resulting parsed input is saved in playersinfo vector (main.cpp).
 
 
 Evaluate Player's hand:
-
-A player's hand is evaluated by 'HandEvaluator' class. It gets the needed input 
-from the 'Hand' class and identfies the combination of highest value possible 
-with the hand. The resulting information is saved back in 'Hand' Class.
+A player's hand is evaluated in evaluator thread via 'HandEvaluator' class. It 
+gets the needed input from playersInfo vector and identfies the combination of 
+highest value possible with the hand. The resulting information is save in 
+handsInfo vector (main.pp)
 
 
 Decide winner and print:
-
 Using the analysis of 'HandEvaluator' class, the 'Judge' class decides the winner
 or decides if its a tie. Judge class also prints out the result as expected.
-
-
 
 USAGE:
 
 A Makefile is provided with the solution which can be used to generate executable.
 The executable generated using the Makefile will have the name "poker".
 
-When you run the executable it asks th prefered mode of input.
-1 for intreractive (console)
-2 for file
+When you run the executable it asks the input file.
 
 Please provide the absolute path of the input file.
 
 Output will be printed on the console.
 
-once the output is printed, the application falls back to input mode.
-Continue to use as many times as needed and press 0 to exit.
-
-
 I have provided the input file I used for testing. It contains all possible input 
 combinations that I could think of. I have also provided result captured while testing
 with the input file.
-
-
-
-
-ASSUMPTIONS:
-
-One of the examples of input/ouput provided with the problem statement shows that
-'flush' wins over 'full house' which is not correct. The solution implemented considers
-'full house' higher than 'flush'
